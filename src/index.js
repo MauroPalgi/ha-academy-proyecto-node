@@ -47,3 +47,21 @@ mongoose
 //! CONFIGURAR CORS
 
 //! VER BIEN COMO HACER LO DE JWT
+
+//! INFORMACION
+
+// Examples
+// Require authentication for every request unless the path is index.html.
+
+// app.use(requiresAuth.unless({
+//   path: [
+//     '/index.html',
+//     { url: '/', methods: ['GET', 'PUT']  }
+//   ]
+// }))
+// Avoid a fstat for request to routes doesnt end with a given extension.
+
+// app.use(static.unless(function (req) {
+//   var ext = url.parse(req.originalUrl).pathname.substr(-4);
+//   return !~['.jpg', '.html', '.css', '.js'].indexOf(ext);
+// }));
