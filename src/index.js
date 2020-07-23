@@ -2,14 +2,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const userRoute = require("./routes/route.user");
-const sessionsRoute = require("./routes/route.user");
+const sessionsRoute = require("./routes/route.sessions");
 const tweetsRoute = require("./routes/route.tweets");
-const SERVER_PORT = 4000;
 const checkJwt = require("express-jwt");
 const morgan = require("morgan");
+const cors = require("cors");
+const { SECRET_KEY, SERVER_PORT, MONGODB_CONNECTION } = require("./config");
 
 mongoose
-  .connect("mongodb://localhost/twitter", {
+  .connect(MONGODB_CONNECTION, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -17,14 +18,16 @@ mongoose
   .then(() => {
     console.log("La BD se inicializo correctamente.");
 
-    // MIDLEWARE
+    // MIDDLEWARE
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
 
-    app.use(morgan("short"));
+    app.use(cors());
+    app.use(morgan("dev"));
+    //console.log(process.env.SECRET_KEY);
     // app.use(
-    //   checkJwt({ secret: "Proyecto_final", algorithms: ["HS256"] }).unless({
+    //   checkJwt({ secret: "Proyecto-final", algorithms: ["HS256"] }).unless({
     //     path: [[/^\/sessions\//]],
     //   })
     // );

@@ -1,36 +1,62 @@
 const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const Seccion = require("../models/model.sessions");
-const { hash } = require("bcrypt");
+const User = require("../models/model.user");
+const { hash, compare } = require("bcrypt");
 const checkJwt = require("express-jwt");
+const { SECRET_KEY } = require("../config");
 const router = Router();
 
-router.post("/", async (req, res) => {
+// const authenticateJWT = (req, res, next) => {
+//   const authHeader = req.headers.authorization;
+
+//   if (authHeader) {
+//     const token = authHeader.split(" ")[1];
+
+//     jwt.verify(token, accessTokenSecret, (err, user) => {
+//       if (err) {
+//         return res.sendStatus(403);
+//       }
+
+//       req.user = user;
+//       next();
+//     });
+//   } else {
+//     res.sendStatus(401);
+//   }
+// };
+
+//! TODO - TODA ESTA PARTE
+
+router.post("/", async (req, res, next) => {
   try {
-    const passHash = await hash(req.body.password, 10);
-    const newSession = await Seccion.create({
-      email: req.body.email,
-      username: req.body.username,
-      hash: passHash,
-    });
-    const userData = { email: newSession.email, username: newSession.username };
-    const token = jwt.sign(userData, "Proyecto_final");
-    res.json({ token: token, user: userData });
+    const session = await User.findOne({ email: req.body.email });
+    console.log(session);
+
+    // const match = await compare(req.body.password, session.hash, (err, res) => {
+    //   if (err) {
+    //     res.json(err.message);
+    //   }
+    //   console.log(res);
+    // });
+
+    res.json(session);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 });
 
-router.get("/", (req,res) => {
-  checkJwt({ secret: "Proyecto_final", algorithms: ['HS256'] }),
-  (req, res, next) => {
-    try {
-      res.json(req.user);
-    } catch (error) {
-      next(error);
-    }
+router.get(
+  "/",
+  checkJwt({ secret: "Proyecto-final", algorithms: ["HS256"] }),
+  (req, res) => {
+    console.log(req.user);
+    res.json(req.user);
   }
-})
-
+);
 
 module.exports = router;
+
+
+
+//! TODO - TODA ESTA PARTE

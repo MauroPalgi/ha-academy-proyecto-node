@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/model.user");
 const { hash } = require("bcrypt");
 const checkJwt = require("express-jwt");
+const { SECRET_KEY } = require("../config");
+
 const router = Router();
 
 router.post("/", async (req, res) => {
@@ -15,7 +17,7 @@ router.post("/", async (req, res) => {
       hash: passHash,
     });
     const userData = { email: newUser.email, username: newUser.username };
-    const token = jwt.sign(userData, "Proyecto_final");
+    const token = jwt.sign(userData, "Proyecto-final");
     res.json({ token: token, user: userData });
   } catch (error) {
     res.status(500).json({ message: error.message });
