@@ -6,16 +6,17 @@ const { hash } = require("bcrypt");
 const checkJwt = require("express-jwt");
 const router = Router();
 
-router.post("/", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  let userJson;
-  jwt.verify(token, "Proyecto-final", (err, user) => {
-    if (err) {
-      return res.sendStatus(403);
-    }
-    userJson = user;
-  });
+router.post("/", verifyToken, async (req, res) => {
   try {
+    const tokenVer = await jwt
+      .verify(req.token, "Proyecto-final")
+      .then((user) => {
+        console.log(user);
+      })
+      .catch((err) => {
+        return res.sendStatus(403).json(err);
+      });
+
     const newTweets = await Tweets.create({
       text: req.body.text,
       author: { username: userJson.username },
@@ -34,4 +35,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+// VERIFY FUNCTION
+
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"].split(" ")[1];
+  // hacer validaciones si pinta
+  req.token = bearerHeader;
+  next();
+}
+
 module.exports = router;
+
+
+//! VIDEO JWT: https://youtu.be/7nafaH9SddU?t=1004
