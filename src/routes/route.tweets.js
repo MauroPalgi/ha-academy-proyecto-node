@@ -24,9 +24,9 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const findTweet = await Tweets.find();
-    res.json(findTweet);
+    res.status(200).json(findTweet);
   } catch (error) {
-    console.log({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 

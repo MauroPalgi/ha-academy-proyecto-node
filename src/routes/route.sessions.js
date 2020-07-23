@@ -1,8 +1,7 @@
-const { Router, json } = require("express");
+const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const User = require("../models/model.user");
 const { compare } = require("bcrypt");
-const checkJwt = require("express-jwt");
 const { SECRET_KEY } = require("../config");
 const router = Router();
 
@@ -24,7 +23,6 @@ router.post("/", async (req, res, next) => {
         error: "Contraseña incorrecta",
       });
     }
-
     const userPayload = { email: user.email };
     const token = jwt.sign(userPayload, SECRET_KEY);
 
@@ -49,5 +47,3 @@ router.get("/", (req, res) => {
 });
 
 module.exports = router;
-
-//! TODO - TODA ESTA PARTE
