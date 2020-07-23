@@ -1,9 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+// ROUTES
 const userRoute = require("./routes/route.user");
 const sessionsRoute = require("./routes/route.sessions");
 const tweetsRoute = require("./routes/route.tweets");
+
+// MIDDLEWARE
 const checkJwt = require("express-jwt");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -18,17 +21,23 @@ mongoose
   .then(() => {
     console.log("La BD se inicializo correctamente.");
 
-    // MIDDLEWARE
+    // SETTINGS AMD MIDDLEWARE
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
 
     app.use(cors());
     app.use(morgan("dev"));
-    //console.log(process.env.SECRET_KEY);
+
+    
     // app.use(
-    //   checkJwt({ secret: "Proyecto-final", algorithms: ["HS256"] }).unless({
-    //     path: [[/^\/sessions\//]],
+    //   checkJwt({ secret: SECRET_KEY, algorithms: ["HS256"] }).unless({
+    //     path: [
+    //       {url: ['/tweets']},
+    //       {path: ['/token']},
+    //       {path: ['/token']},
+         
+    //     ],
     //   })
     // );
     app.use("/users", userRoute);

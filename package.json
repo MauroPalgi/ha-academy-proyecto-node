@@ -27,10 +27,10 @@
     "express-jwt": "^6.0.0",
     "json-web-token": "^3.2.0",
     "mongoose": "^5.9.25",
+    "morgan": "^1.10.0",
     "validator": "^13.1.1"
   },
   "devDependencies": {
-    "morgan": "^1.10.0",
     "nodemon": "^2.0.4"
   }
 }

@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
       hash: passHash,
     });
     const userData = { email: newUser.email, username: newUser.username };
-    const token = jwt.sign(userData, "Proyecto-final");
+    const token = jwt.sign(userData, SECRET_KEY);
     res.json({ token: token, user: userData });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -1,8 +1,7 @@
-const { Router } = require("express");
+const { Router, json } = require("express");
 const jwt = require("jsonwebtoken");
-const Seccion = require("../models/model.sessions");
 const User = require("../models/model.user");
-const { hash, compare } = require("bcrypt");
+const { compare } = require("bcrypt");
 const checkJwt = require("express-jwt");
 const { SECRET_KEY } = require("../config");
 const router = Router();
@@ -27,7 +26,7 @@ router.post("/", async (req, res, next) => {
     }
 
     const userPayload = { email: user.email };
-    const token = jwt.sign(userPayload, "Proyecto-final");
+    const token = jwt.sign(userPayload, SECRET_KEY);
 
     res.json({
       user: userPayload,
@@ -38,11 +37,16 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get(
-  "/",(params) => {
-    
-  }
-);
+router.get("/", (req, res) => {
+  const token = req.headers.authorization;
+  console.log(token);
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err) {
+      console.log(err.message);
+    }
+    res.status(200).json(decoded);
+  });
+});
 
 module.exports = router;
 
