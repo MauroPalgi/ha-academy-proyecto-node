@@ -7,56 +7,43 @@ const checkJwt = require("express-jwt");
 const { SECRET_KEY } = require("../config");
 const router = Router();
 
-// const authenticateJWT = (req, res, next) => {
-//   const authHeader = req.headers.authorization;
-
-//   if (authHeader) {
-//     const token = authHeader.split(" ")[1];
-
-//     jwt.verify(token, accessTokenSecret, (err, user) => {
-//       if (err) {
-//         return res.sendStatus(403);
-//       }
-
-//       req.user = user;
-//       next();
-//     });
-//   } else {
-//     res.sendStatus(401);
-//   }
-// };
-
 //! TODO - TODA ESTA PARTE
 
 router.post("/", async (req, res, next) => {
   try {
-    const session = await User.findOne({ email: req.body.email });
-    console.log(session);
+    const user = await User.findOne({ email: req.body.email });
 
-    // const match = await compare(req.body.password, session.hash, (err, res) => {
-    //   if (err) {
-    //     res.json(err.message);
-    //   }
-    //   console.log(res);
-    // });
+    if (!user) {
+      return res.status(404).json({
+        error: "No se encuentra ningún usuario con ese email",
+      });
+    }
 
-    res.json(session);
+    const match = await compare(req.body.password, user.hash);
+    if (!match) {
+      return res.status(400).json({
+        error: "Contraseña incorrecta",
+      });
+    }
+
+    const userPayload = { email: user.email };
+    const token = jwt.sign(userPayload, "Proyecto-final");
+
+    res.json({
+      user: userPayload,
+      token,
+    });
   } catch (error) {
     next(error);
   }
 });
 
 router.get(
-  "/",
-  checkJwt({ secret: "Proyecto-final", algorithms: ["HS256"] }),
-  (req, res) => {
-    console.log(req.user);
-    res.json(req.user);
+  "/",(params) => {
+    
   }
 );
 
 module.exports = router;
-
-
 
 //! TODO - TODA ESTA PARTE

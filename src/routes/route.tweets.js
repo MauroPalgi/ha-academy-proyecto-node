@@ -1,26 +1,23 @@
-const mongoose = require("mongoose");
 const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const Tweets = require("../models/model.tweets");
-const { hash } = require("bcrypt");
-const checkJwt = require("express-jwt");
+const User = require("../models/model.user");
+//const checkJwt = require("express-jwt");
 const router = Router();
 
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const tokenVer = await jwt
-      .verify(req.token, "Proyecto-final")
-      .then((user) => {
-        console.log(user);
-      })
-      .catch((err) => {
-        return res.sendStatus(403).json(err);
-      });
-
-    const newTweets = await Tweets.create({
-      text: req.body.text,
-      author: { username: userJson.username },
-    });
+    const token = req.headers.authorization.split(" ")[1];
+    const tokenVer = await jwt.verify(token, "Proyecto-final");    
+    const userData = await User.findOne({ email: tokenVer.email });    
+    const newTweets = await Tweets.create(
+      {
+        text: req.body.text,
+        author: { username: userData.username },
+      },
+      { new: true }
+    ).lean();    
+    req.stetus(200).json(newTweets);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -37,14 +34,6 @@ router.get("/", async (req, res) => {
 
 // VERIFY FUNCTION
 
-function verifyToken(req, res, next) {
-  const bearerHeader = req.headers["authorization"].split(" ")[1];
-  // hacer validaciones si pinta
-  req.token = bearerHeader;
-  next();
-}
-
 module.exports = router;
-
 
 //! VIDEO JWT: https://youtu.be/7nafaH9SddU?t=1004
