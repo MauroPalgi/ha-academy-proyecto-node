@@ -42,7 +42,7 @@ router.get("/", (req, res) => {
   console.log(token);
   jwt.verify(token, SECRET_KEY, (err, decoded) => {
     if (err) {
-      console.log(err.message);
+      res.status(500).json({ error: err.message });
     }
     res.status(200).json(decoded);
   });

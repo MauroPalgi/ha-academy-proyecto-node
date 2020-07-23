@@ -21,21 +21,14 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get(
-  "/",
-  checkJwt({ secret: SECRET_KEY, algorithms: ["HS256"] }),
-  async (req, res) => {
-    if (!req.user) {
-      res.status(500).json({ error: "Missing token" });
-    }
-    try {
-      const findTweet = await Tweets.find();
-      res.json(findTweet);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+router.get("/", async (req, res) => {
+  try {
+    const findTweet = await Tweets.find();
+    res.json(findTweet);
+  } catch (error) {
+    console.log({ message: error.message });
   }
-);
+});
 
 // VERIFY FUNCTION
 

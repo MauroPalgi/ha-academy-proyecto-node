@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const unless = require("express-unless");
 // ROUTES
 const userRoute = require("./routes/route.user");
 const sessionsRoute = require("./routes/route.sessions");
@@ -29,20 +30,19 @@ mongoose
     app.use(cors());
     app.use(morgan("dev"));
 
-    
-    // app.use(
-    //   checkJwt({ secret: SECRET_KEY, algorithms: ["HS256"] }).unless({
-    //     path: [
-    //       {url: ['/tweets']},
-    //       {path: ['/token']},
-    //       {path: ['/token']},
-         
-    //     ],
-    //   })
-    // );
     app.use("/users", userRoute);
     app.use("/sessions", sessionsRoute);
     app.use("/tweets", tweetsRoute);
+
+    app.use(
+      checkJwt({ secret: SECRET_KEY, algorithms: ["HS256"] }).unless({
+        path: [
+          { url: "/sessions", methods: ["POST"] },
+          { url: "/users", methods: ["POST"] },
+          { url: "/tweets", methods: ["GET"] },
+        ],
+      })
+    );
 
     // SERVER
     app.listen(SERVER_PORT, () => {
